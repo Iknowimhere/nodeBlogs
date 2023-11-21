@@ -1,10 +1,10 @@
 const express=require("express")
-const authRoutes=require("./routes/userRoutes")
-const profileRoutes=require("./routes/profileRoute")
+const authRouter=require("./routes/userRoutes")
+const blogRouter=require("./routes/BlogRoutes")
 const app=express()
 
 app.use(express.json())
-app.use("/app/v1/users",authRoutes);
-app.use("/app/v1/profile",profileRoutes);
+app.use("/app/v1/users",authRouter);
+app.use("/app/v1/blogs",blogRouter);
 
 module.exports=app;
