@@ -1,4 +1,5 @@
 const {Schema,model}=require("mongoose")
+const User = require("./User")
 
 const blogSchema=new Schema({
     title:{
@@ -27,3 +28,6 @@ const blogSchema=new Schema({
 })
 
 module.exports=model("blog",blogSchema)
+
+
+Blog.find({author:User._id})

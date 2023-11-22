@@ -24,6 +24,74 @@ const postBlog=async(req,res)=>{
     }
 }
 
+const getBlog=async(req,res)=>{
+    try {
+        const {id}=req.params
+        const blog=await Blog.findById(id)
+        res.status(200).json({
+            status:'success',
+            data:{
+                blog
+            }
+        })
+    } catch (error) {
+        res.status(400).json({
+            status:'fail',
+            message:error.message
+        })
+    }
+}
+
+const getBlogs=async(req,res)=>{
+    try {
+        const blogs=await Blog.find()
+        res.status(200).json({
+            status:'success',
+            data:{
+                blogs
+            }
+        })
+    } catch (error) {
+        res.status(400).json({
+            status:'fail',
+            message:error.message
+        })
+    }
+}
+
+const updateBlog=async(req,res)=>{
+    try {
+        const {id}=req.params
+        const updatedBlog=await Blog.findByIdAndUpdate(id,req.body,{new:true})
+        res.status(200).json({
+            status:'success',
+            data:{
+                updatedBlog
+            }
+        })
+    } catch (error) {
+        res.status(400).json({
+            status:'fail',
+            message:error.message
+        })
+    }
+}
+
+const deleteBlog=async(req,res)=>{
+    try {
+        const {id}=req.params
+    await Blog.findByIdAndDelete(id)
+        res.status(200).json({
+            status:'success',
+            data:null
+        })
+    } catch (error) {
+        res.status(400).json({
+            status:'fail',
+            message:error.message
+        })
+    }
+}
 module.exports={
-    postBlog
+    postBlog,getBlog,getBlogs,updateBlog,deleteBlog
 }
