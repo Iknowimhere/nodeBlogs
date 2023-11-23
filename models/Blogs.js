@@ -29,5 +29,3 @@ const blogSchema=new Schema({
 
 module.exports=model("blog",blogSchema)
 
-
-Blog.find({author:User._id})
