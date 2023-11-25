@@ -24,6 +24,16 @@ const blogSchema=new Schema({
     image:{
         type:[String],
         default:""
+    },
+    ratings:{
+        type:Number,
+        default:1,
+        validator:{
+            validate:function(value){
+                    return value >= 1 && value <=5;
+            },
+            message:"ratings should be between 1 and 5"
+        }
     }
 })
 
