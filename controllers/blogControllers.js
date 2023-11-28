@@ -51,7 +51,9 @@ const getBlogs=async(req,res)=>{
         let skip=(page-1)*limit
         //ratings,year  //ratings year  
         sort && sort.split(",").join(" ") 
+        
         const blogs=await Blog.find({title:{$regex:search,$options:"i"}}).skip(skip).limit(limit).sort(sort)
+
         let totalBlogs=await Blog.countDocuments()
         res.status(200).json({
             status:'success',
@@ -73,13 +75,26 @@ const getBlogs=async(req,res)=>{
 const updateBlog=async(req,res)=>{
     try {
         const {id}=req.params
-        const updatedBlog=await Blog.findByIdAndUpdate(id,req.body,{new:true})
-        res.status(200).json({
-            status:'success',
-            data:{
-                updatedBlog
-            }
-        })
+        const {title,description,snippet,image,ratings}=req.body
+        if(req.user.role==='author'){
+            const updatedBlog=await Blog.findOneAndUpdate({_id:id},{$set:{title:title,snippet:snippet,description:description,image:image}},{new:true,runValidators:true})
+            return res.status(200).json({
+                status:'success',
+                data:{
+                    updatedBlog
+                }
+            })
+        }
+        if(req.user.role==='user'){
+            const updatedBlog=await Blog.findOneAndUpdate({_id:id},{$set:{ratings:ratings}},{new:true,runValidators:true})
+            return res.status(200).json({
+                status:'success',
+                data:{
+                    updatedBlog
+                }
+            })
+        }
+       
     } catch (error) {
         res.status(400).json({
             status:'fail',
