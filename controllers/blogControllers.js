@@ -1,7 +1,7 @@
 const Blog = require("../models/Blogs");
+const asyncErrorHandler=require("../utils/asyncErrorHandler")
 
-const postBlog=async(req,res)=>{
-    try {
+const postBlog=asyncErrorHandler(async(req,res)=>{
         let user=req.user;
         const newBlog=await Blog.create({
             title:req.body.title,
@@ -16,13 +16,7 @@ const postBlog=async(req,res)=>{
                 newBlog
             }
         })
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:error.message
-        })
-    }
-}
+})
 
 const getBlog=async(req,res)=>{
     try {

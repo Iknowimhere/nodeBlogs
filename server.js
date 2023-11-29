@@ -16,3 +16,5 @@ server.listen(PORT,(err)=>{
     if(err)console.log(err);
     console.log(`listening on ${PORT}...`);
 })
+
+// console.log(process.env);
