@@ -1,21 +1,14 @@
 const User=require("../models/User")
 const jwt=require("jsonwebtoken")
+const asyncErrorHandler=require("../utils/asyncErrorHandler")
+const CustomError=require("../utils/CustomError")
 
 const genToken=async (id)=>{
    return await jwt.sign({id},process.env.JWT_SECRET,{
         expiresIn:24*60*60
     })
 }
-const signup=async (req,res)=>{
-    try {
-        //verify if user is present already
-        const existingUser=await User.findOne({email:req.body.email})
-        if(existingUser){
-            return res.status(401).json({
-                status:'fail',
-                message:"user exists already,try logging in"
-            })
-        }
+const signup=asyncErrorHandler(async (req,res,next)=>{
         const newUser=await User.create(req.body)
         const token=await genToken(newUser._id)
         res.status(201).json({
@@ -25,28 +18,25 @@ const signup=async (req,res)=>{
                 newUser
             }
         })
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:error.message
-        })
-    }
-}
+})
 
-const login=async (req,res)=>{
-    try {
+const login=asyncErrorHandler(async (req,res,next)=>{
         if(!req.body.email || !req.body.password ){
-            return res.status(400).json({
-                status:'fail',
-                message:"please enter credentials"
-            })
+            // return res.status(400).json({
+            //     status:'fail',
+            //     message:"please enter credentials"
+            // })
+            const err=new CustomError(400,"please enter credentials")
+            next(err)
         }
         const existingUser=await User.findOne({email:req.body.email})
         if(!existingUser || !(await existingUser.comparePassword(req.body.password,existingUser.password))){
-            return res.status(400).json({
-                status:'fail',
-                message:"User name and password is not correct"
-            })
+            // return res.status(400).json({
+            //     status:'fail',
+            //     message:"User name and password is not correct"
+            // })
+             const err=new CustomError(400,"User name and password is not correct")
+            next(err)
         }
         const token=await genToken(existingUser._id)
         res.status(200).json({
@@ -56,13 +46,7 @@ const login=async (req,res)=>{
                 existingUser
             }
         })
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:error.message
-        })
-    }
-}
+})
 
 module.exports={
     signup,login

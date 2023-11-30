@@ -18,8 +18,7 @@ const postBlog=asyncErrorHandler(async(req,res)=>{
         })
 })
 
-const getBlog=async(req,res)=>{
-    try {
+const getBlog=asyncErrorHandler(async(req,res)=>{
         const {id}=req.params
         const blog=await Blog.findById(id)
         res.status(200).json({
@@ -28,13 +27,7 @@ const getBlog=async(req,res)=>{
                 blog
             }
         })
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:error.message
-        })
-    }
-}
+})
 
 const getBlogs=async(req,res)=>{
     try {
