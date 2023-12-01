@@ -1,4 +1,5 @@
 const Blog = require("../models/Blogs");
+const Rating = require("../models/Rating");
 const asyncErrorHandler=require("../utils/asyncErrorHandler")
 
 const postBlog=asyncErrorHandler(async(req,res)=>{
@@ -29,8 +30,7 @@ const getBlog=asyncErrorHandler(async(req,res)=>{
         })
 })
 
-const getBlogs=async(req,res)=>{
-    try {
+const getBlogs=asyncErrorHandler(async(req,res)=>{
         let search=req.query.search || ""
         let page=req.query.page*1 || 1
         let limit=req.query.limit*1 || 2
@@ -51,18 +51,11 @@ const getBlogs=async(req,res)=>{
                 blogs
             }
         })
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:error.message
-        })
-    }
-}
+})
 
-const updateBlog=async(req,res)=>{
-    try {
+const updateBlog=asyncErrorHandler(async(req,res)=>{
         const {id}=req.params
-        const {title,description,snippet,image,ratings}=req.body
+        const {title,description,snippet,image}=req.body
         if(req.user.role==='author'){
             const updatedBlog=await Blog.findOneAndUpdate({_id:id},{$set:{title:title,snippet:snippet,description:description,image:image}},{new:true,runValidators:true})
             return res.status(200).json({
@@ -72,40 +65,44 @@ const updateBlog=async(req,res)=>{
                 }
             })
         }
-        if(req.user.role==='user'){
-            const updatedBlog=await Blog.findOneAndUpdate({_id:id},{$set:{ratings:ratings}},{new:true,runValidators:true})
-            return res.status(200).json({
-                status:'success',
-                data:{
-                    updatedBlog
-                }
-            })
-        }
-       
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:error.message
-        })
-    }
-}
+})
 
-const deleteBlog=async(req,res)=>{
-    try {
+const deleteBlog=asyncErrorHandler(async(req,res)=>{
         const {id}=req.params
     await Blog.findByIdAndDelete(id)
         res.status(200).json({
             status:'success',
             data:null
         })
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:error.message
-        })
-    }
-}
+})
+
+let postRating=asyncErrorHandler(async(req,res)=>{
+    let userId=req.user._id
+    let blogId=req.params.id
+    let rating=await Rating.create({ratings:req.body.ratings,userId:userId,blogId:blogId})
+    res.status(201).json({
+        status:"success",
+           blogId,
+        data:{
+        rating
+        }
+    })
+
+})
+
+let getRatings=asyncErrorHandler(async(req,res)=>{
+    let blogId=req.params.id
+    let ratings=await Rating.find({blogId:blogId})
+    res.status(200).json({
+        status:"success",
+           blogId,
+        data:{
+        ratings
+        }
+    })
+
+})
 
 module.exports={
-    postBlog,getBlog,getBlogs,updateBlog,deleteBlog
+    postBlog,getBlog,getBlogs,updateBlog,deleteBlog,postRating,getRatings
 }
