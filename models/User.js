@@ -19,10 +19,10 @@ const userSchema = new Schema(
     role: {
       type: String,
       enum: {
-        values: ["user", "admin", "author"],
+        values: ["user"],
         message:`{VALUE} role is not defined`
       },
-      default: "admin",
+      default: "user",
     },
     password: {
       type: String,
