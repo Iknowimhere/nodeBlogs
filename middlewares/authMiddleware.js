@@ -23,7 +23,7 @@ const auth = asyncErrorHandler(async (req, res, next) => {
   });
   users= await Promise.all(users);
   let authorizedUser = users.filter((doc) => doc !== null);
-  if (!authorizedUser) {
+  if (!authorizedUser[0]) {
     const err = new CustomError(401, "user no longer exists");
     next(err);
   }
